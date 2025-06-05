@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WasteLedger - Blockchain Waste Reporting</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2981/2981014.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      scroll-behavior: smooth;
+    }
+    /* Navbar fix */
+    nav {
+      backdrop-filter: saturate(180%) blur(10px);
+      background-color: rgba(22, 101, 52, 0.85);
+    }
+    /* Animated subtle background for Home */
+    #home {
+      position: relative;
+      color: white;
+      min-height: 100vh;
+      padding-top: 6rem; /* space for fixed navbar */
+      overflow: hidden;
+      background-image: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+    #home::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(22, 101, 52, 0.75);
+      z-index: 0;
+    }
+    /* Content wrapper */
+    #home .content-wrapper {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      align-items: center;
+    }
+    /* Left text block */
+    #home .text-block {
+      flex: 1 1 400px;
+      max-width: 480px;
+    }
+    #home .text-block h2 {
+      font-family: 'Comfortaa', cursive;
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+    }
+    #home .text-block p {
+      font-size: 1.3rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.5;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+    }
+    #home .text-block a.button {
+      background-color: #22c55e; /* Tailwind green-500 */
+      padding: 0.75rem 2.5rem;
+      border-radius: 9999px;
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 8px 15px rgba(34,197,94,0.4);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      display: inline-block;
+      text-align: center;
+    }
+    #home .text-block a.button:hover {
+      background-color: #16a34a; /* Tailwind green-600 */
+      box-shadow: 0 12px 25px rgba(22,163,74,0.6);
+    }
+    /* Right images grid */
+    #home .image-grid {
+      flex: 1 1 400px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 150px);
+      gap: 1rem;
+      max-width: 480px;
+      width: 100%;
+    }
+    #home .image-grid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 1rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    #home .image-grid img:hover {
+      transform: scale(1.05);
+    }
+    /* Lottie container below */
+    #home .lottie-wrapper {
+      width: 100%;
+      margin-top: 3rem;
+      text-align: center;
+      z-index: 10;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      #home .content-wrapper {
+        flex-direction: column;
+      }
+      #home .image-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 130px);
+        max-width: 100%;
+      }
+      #home .text-block h2 {
+        font-size: 2.5rem;
+      }
+      #home .text-block p {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+  <!-- Navbar -->
+  <nav
+    class="text-white px-6 py-4 flex justify-between items-center shadow-md fixed top-0 w-full z-50"
+  >
+    <div class="flex items-center space-x-3">
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/2592/2592510.png"
+        alt="WasteLedger Logo"
+        class="h-10 w-10"
+      />
+      <h1 class="text-2xl font-extrabold tracking-wide">WasteLedger</h1>
+    </div>
+    <ul class="hidden md:flex space-x-6 text-lg font-semibold">
+      <li><a href="#home" class="hover:text-green-300">Home</a></li>
+      <li><a href="#services" class="hover:text-green-300">Services</a></li>
+      <li><a href="#report" class="hover:text-green-300">Report</a></li>
+      <li><a href="#municipal" class="hover:text-green-300">Municipal</a></li>
+      <li><a href="#contact" class="hover:text-green-300">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Home Section -->
+  <section id="home">
+    <div class="content-wrapper">
+      <div class="text-block" data-aos="fade-right" data-aos-duration="1500">
+        <h2>WasteLedger</h2>
+        <p>Efficient, reliable, and user-friendly garbage disposal for a cleaner tomorrow.</p>
+        <a href="#report" class="button">Request Pickup</a>
+      </div>
+
+      <div class="image-grid" data-aos="fade-left" data-aos-duration="1500">
+       <img src="https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=400&q=80" alt="Recycling Bins" />
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Nature Forest" />
+        <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=400&q=80" alt="People Cleaning Park" />
+        <img src="https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=400&q=80" alt="Garbage Truck" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section
+    id="services"
+    class="p-16 max-w-7xl mx-auto relative"
+  >
+    <h2
+      class="text-4xl font-bold text-center mb-10 z-10 relative"
+      data-aos="fade-up"
+    >
+      Our Services
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div
+        class="service-card p-6 rounded-lg shadow-lg"
+        data-aos="zoom-in"
+        data-aos-delay="100"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80"
+          alt="Smart Waste Tracking"
+          class="w-full h-40 object-cover rounded mb-4"
+        />
+        <h3 class="text-xl font-bold mb-2">Smart Waste Tracking</h3>
+        <p>
+          Real-time GPS-enabled waste pickups with full traceability on
+          blockchain.
+        </p>
+      </div>
+      <div
+        class="service-card p-6 rounded-lg shadow-lg"
+        data-aos="zoom-in"
+        data-aos-delay="200"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80"
+          alt="Verified Reports"
+          class="w-full h-40 object-cover rounded mb-4"
+        />
+        <h3 class="text-xl font-bold mb-2">Verified Reports</h3>
+        <p>
+          Immutable records with timestamp, geolocation, and photo proof. When a
+          citizen reports a waste pickup request, the municipal worker assigned
+          can upload proof of collection (photo, timestamp, GPS).
+        </p>
+      </div>
+      <div
+        class="service-card p-6 rounded-lg shadow-lg"
+        data-aos="zoom-in"
+        data-aos-delay="300"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80"
+          alt="Environmental Insights"
+          class="w-full h-40 object-cover rounded mb-4"
+        />
+        <h3 class="text-xl font-bold mb-2">Environmental Insights</h3>
+        <p>Data-driven dashboards for smart waste policy decisions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Report Section -->
+  <section id="report" class="p-16 bg-white">
+    <h2 class="text-4xl font-bold text-center mb-10">Submit Waste Pickup Request</h2>
+    <div
+      class="max-w-3xl mx-auto bg-green-50 p-10 rounded-lg shadow-lg"
+      data-aos="fade-up"
+    >
+      <form class="grid grid-cols-1 gap-6" onsubmit="event.preventDefault(); alert('Your request has been submitted');">
+        <input
+          type="text"
+          placeholder="Your Name"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Location"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Type of Waste"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input type="file" accept="image/*" class="p-3 border rounded shadow" />
+        <textarea
+          rows="4"
+          placeholder="Additional Details"
+          class="p-3 border rounded shadow"
+        ></textarea>
+        <button
+          type="submit"
+          class="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition"
+        >
+          Submit Request
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Municipal Worker Section -->
+  <section
+    id="municipal"
+    class="p-16 bg-green-100"
+  >
+    <h2
+      class="text-4xl font-bold text-center mb-10"
+      data-aos="fade-down"
+    >
+      For Municipal Workers
+    </h2>
+    <div
+      class="max-w-4xl mx-auto bg-white p-10 rounded-lg shadow-md"
+      data-aos="fade-up"
+    >
+      <p class="text-lg mb-6 text-center">
+        Municipal workers can upload proof of waste collection assigned to them
+        by submitting the form below:
+      </p>
+      <form class="grid grid-cols-1 gap-6" enctype="multipart/form-data" onsubmit="event.preventDefault(); alert('Pickup proof has been submitted');">
+        <input
+          type="text"
+          placeholder="Worker ID"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Location (GPS coordinates or area)"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="datetime-local"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <textarea
+          rows="4"
+          placeholder="Remarks or Notes (optional)"
+          class="p-3 border rounded shadow"
+        ></textarea>
+        <button
+          type="submit"
+          class="bg-green-700 text-white py-3 px-6 rounded hover:bg-green-800 transition"
+        >
+          Submit Proof
+        </button>
+      </form>
+      <p
+        class="mt-6 text-green-700 font-semibold text-center"
+      >
+        All submissions will be securely logged in our system
+      </p>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="p-16 bg-gray-100">
+    <h2
+      class="text-4xl font-bold text-center mb-10"
+      data-aos="fade-up"
+    >
+      What People Say
+    </h2>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div
+        class="bg-white p-6 rounded-lg shadow-lg text-center"
+        data-aos="fade-up"
+      >
+        <p class="text-lg italic">
+          "WasteLedger transformed our city’s waste system. I can actually track
+          requests now!"
+        </p>
+        <h4 class="mt-4 font-semibold text-green-700">- Priya Sharma</h4>
+      </div>
+      <div
+        class="bg-white p-6 rounded-lg shadow-lg text-center"
+        data-aos="fade-up"
+        data-aos-delay="100"
+      >
+        <p class="text-lg italic">
+          "Very efficient and easy to use for municipal staff. Love the
+          transparency!"
+        </p>
+        <h4 class="mt-4 font-semibold text-green-700">- Rajesh Kumar</h4>
+      </div>
+      <div
+        class="bg-white p-6 rounded-lg shadow-lg text-center"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        <p class="text-lg italic">
+          "Audit-ready reports with blockchain backing—every city should use
+          this!"
+        </p>
+        <h4 class="mt-4 font-semibold text-green-700">- Dr. Nandita Rao</h4>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="p-16 bg-green-50">
+    <h2 class="text-4xl font-bold text-center mb-10" data-aos="fade-up">
+      Get in Touch with Us
+    </h2>
+    <div
+      class="max-w-3xl mx-auto bg-white p-10 rounded-lg shadow-lg"
+      data-aos="fade-up"
+    >
+      <form class="grid grid-cols-1 gap-6" onsubmit="event.preventDefault(); alert('Thank you for contacting us, your query will be looked after immediately');">
+        <input
+          type="text"
+          placeholder="Your Name"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <input
+          type="email"
+          placeholder="Your Email"
+          class="p-3 border rounded shadow"
+          required
+        />
+        <textarea
+          rows="5"
+          placeholder="Your Message"
+          class="p-3 border rounded shadow"
+          required
+        ></textarea>
+        <button
+          type="submit"
+          class="bg-green-600 text-white py-3 px-6 rounded hover:bg-green-700 transition"
+        >
+          Send Message
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer
+    class="bg-green-800 text-white text-center p-6 mt-10 text-lg"
+  >
+    &copy; 2025 WasteLedger | Empowering Transparent Waste Management
+  </footer>
+
+  <script>
+    AOS.init();
+  </script>
+  <link rel="stylesheet" href="style.css" />
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js">
+</script>
+</body>
+</html>
+
