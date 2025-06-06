@@ -251,27 +251,31 @@
       class="max-w-3xl mx-auto bg-green-50 p-10 rounded-lg shadow-lg"
       data-aos="fade-up"
     >
-      <form class="grid grid-cols-1 gap-6" onsubmit="event.preventDefault(); alert('Your request has been submitted');">
+      <form id="wastePickupForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
         <input
           type="text"
+          name="name"
           placeholder="Your Name"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="text"
+          name="location"
           placeholder="Location"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="text"
+          name="image"
           placeholder="Type of Waste"
           class="p-3 border rounded shadow"
           required
         />
         <input type="file" accept="image/*" class="p-3 border rounded shadow" />
         <textarea
+          name="details"
           rows="4"
           placeholder="Additional Details (optional)"
           class="p-3 border rounded shadow"
@@ -453,6 +457,56 @@
     document.getElementById('pickupModal').classList.add('hidden');
   }
 </script>
-  
+  <script>
+  const backendURL = 'http://localhost:5000';
+
+  // Citizen waste report
+  document.getElementById('citizenForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const res = await fetch(`${backendURL}/api/report`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    form.reset();
+  });
+
+  // Municipal worker upload
+  document.getElementById('workerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const res = await fetch(`${backendURL}/api/municipal`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    form.reset();
+  });
+
+  // Contact us
+  document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const plainForm = Object.fromEntries(formData.entries());
+    const res = await fetch(`${backendURL}/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(plainForm)
+    });
+    const data = await res.json();
+    alert(data.message);
+    e.target.reset();
+  });
+</script>
+
 </body>
 </html>

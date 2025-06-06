@@ -34,5 +34,10 @@ app.post('/api/municipal', upload.single('image'), (req, res) => {
   console.log("Municipal Proof:", { workerId, location, timestamp, notes, image });
   res.status(200).send({ message: 'Proof uploaded!' });
 });
-
+// Contact form submission
+app.post('/contact', (req, res) => {
+  const { email, message } = req.body;
+  console.log('Contact Message:', { email, message });
+  res.status(200).send({ message: 'Message received! Thank you for contacting us.' });
+});
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
