@@ -315,26 +315,30 @@
         Municipal workers can upload proof of waste collection assigned to them
         by submitting the form below:
       </p>
-      <form class="grid grid-cols-1 gap-6" enctype="multipart/form-data" onsubmit="event.preventDefault(); alert('Pickup proof has been submitted');">
+      <form class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
         <input
           type="text"
+          name="workerId"
           placeholder="Worker ID"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="text"
+          name="location"
           placeholder="Location (GPS coordinates or area)"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="datetime-local"
+          name="timestamp"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="file"
+          name="image"
           accept="image/*"
           class="p-3 border rounded shadow"
           required
@@ -521,12 +525,12 @@
     const formData = new FormData(form);
 
     try {
-      const response = await fetch('/your-backend-api-endpoint', {  // Change this URL to your backend route
+      const res = await fetch(`${backendURL}/api/report`, {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!res.ok) throw new Error('Network response was not ok');
 
       alert('Your request has been submitted successfully!');
       form.reset();
