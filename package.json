@@ -17,10 +17,11 @@
     "url": "https://github.com/Saumyasingh1205/Wasteledger/issues"
   },
   "homepage": "https://github.com/Saumyasingh1205/Wasteledger#readme",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "multer": "^2.0.1"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WasteLedger - Blockchain Waste Reporting</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2981/2981014.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <section class="p-6 max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Citizen Waste Report Form</h1>
+    <form id="citizenForm" class="space-y-4">
+      <input type="text" name="name" placeholder="Your Name" required class="w-full p-2 border rounded" />
+      <input type="text" name="location" placeholder="Location" required class="w-full p-2 border rounded" />
+      <input type="file" name="image" accept="image/*" required class="w-full" />
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Submit Report</button>
+    </form>
+
+    <h1 class="text-3xl font-bold my-6">Municipal Worker Upload</h1>
+    <form id="workerForm" class="space-y-4">
+      <input type="text" name="workerName" placeholder="Worker Name" required class="w-full p-2 border rounded" />
+      <input type="text" name="location" placeholder="Location" required class="w-full p-2 border rounded" />
+      <input type="file" name="proof" accept="image/*" required class="w-full" />
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Upload Proof</button>
+    </form>
+
+    <h1 class="text-3xl font-bold my-6">Contact Us</h1>
+    <form id="contactForm" class="space-y-4">
+      <input type="email" name="email" placeholder="Email" required class="w-full p-2 border rounded" />
+      <textarea name="message" placeholder="Your message..." required class="w-full p-2 border rounded"></textarea>
+      <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Send Message</button>
+    </form>
+  </section>
+
+  <script>
+    const backendURL = 'http://localhost:5000';
+
+    document.getElementById('citizenForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const res = await fetch(`${backendURL}/submitRequest`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      alert(data.message);
+      form.reset();
+    });
+
+    document.getElementById('workerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const res = await fetch(`${backendURL}/submitProof`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      alert(data.message);
+      form.reset();
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const plainForm = Object.fromEntries(formData.entries());
+      const res = await fetch(`${backendURL}/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(plainForm)
+      });
+      const data = await res.json();
+      alert(data.message);
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
