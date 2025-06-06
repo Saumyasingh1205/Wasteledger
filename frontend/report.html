@@ -19,9 +19,11 @@
 
     <h1 class="text-3xl font-bold my-6">Municipal Worker Upload</h1>
     <form id="workerForm" class="space-y-4">
-      <input type="text" name="workerName" placeholder="Worker Name" required class="w-full p-2 border rounded" />
+      <input type="text" name="workerId" placeholder="Worker ID" required class="w-full p-2 border rounded" />
       <input type="text" name="location" placeholder="Location" required class="w-full p-2 border rounded" />
-      <input type="file" name="proof" accept="image/*" required class="w-full" />
+      <input type="text" name="timestamp" placeholder="Timestamp" required class="w-full p-2 border rounded" />
+      <input type="text" name="notes" placeholder="Notes" class="w-full p-2 border rounded" />
+      <input type="file" name="image" accept="image/*" required class="w-full" />
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Upload Proof</button>
     </form>
 
@@ -36,32 +38,38 @@
   <script>
     const backendURL = 'http://localhost:5000';
 
+    // Citizen waste report
     document.getElementById('citizenForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const formData = new FormData(form);
-      const res = await fetch(`${backendURL}/submitRequest`, {
+
+      const res = await fetch(`${backendURL}/api/report`, {
         method: 'POST',
         body: formData
       });
+
       const data = await res.json();
       alert(data.message);
       form.reset();
     });
 
+    // Municipal worker upload
     document.getElementById('workerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const formData = new FormData(form);
-      const res = await fetch(`${backendURL}/submitProof`, {
+
+      const res = await fetch(`${backendURL}/api/municipal`, {
         method: 'POST',
         body: formData
       });
+
       const data = await res.json();
       alert(data.message);
       form.reset();
     });
-
+    // Contact us
     document.getElementById('contactForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
