@@ -268,12 +268,18 @@
         />
         <input
           type="text"
-          name="image"
+          name="wastetype"
           placeholder="Type of Waste"
           class="p-3 border rounded shadow"
           required
         />
-        <input type="file" accept="image/*" class="p-3 border rounded shadow" />
+        <input 
+         type="file" 
+         name="image"
+         accept="image/*" 
+         class="p-3 border rounded shadow" 
+         required
+         />
         <textarea
           name="details"
           rows="4"
@@ -505,6 +511,28 @@
     const data = await res.json();
     alert(data.message);
     e.target.reset();
+  });
+</script>
+<script>
+  document.getElementById('wastePickupForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch('/your-backend-api-endpoint', {  // Change this URL to your backend route
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      alert('Your request has been submitted successfully!');
+      form.reset();
+    } catch (error) {
+      alert('There was an error submitting your request: ' + error.message);
+    }
   });
 </script>
 
