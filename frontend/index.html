@@ -266,7 +266,7 @@
           class="p-3 border rounded shadow"
           required
         />
-        <input
+          <input
           type="text"
           name="wastetype"
           placeholder="Type of Waste"
@@ -315,7 +315,7 @@
         Municipal workers can upload proof of waste collection assigned to them
         by submitting the form below:
       </p>
-      <form class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
+      <form id="workerForm" class="grid grid-cols-1 gap-6" enctype="multipart/form-data">
         <input
           type="text"
           name="workerId"
@@ -364,48 +364,20 @@
   </section>
 
   <!-- Testimonials Section -->
-  <section class="p-16 bg-gray-100">
-    <h2
-      class="text-4xl font-bold text-center mb-10"
-      data-aos="fade-up"
-    >
-      What People Say
-    </h2>
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-      <div
-        class="bg-white p-6 rounded-lg shadow-lg text-center"
-        data-aos="fade-up"
-      >
-        <p class="text-lg italic">
-          "WasteLedger transformed our city’s waste system. I can actually track
-          requests now!"
-        </p>
-        <h4 class="mt-4 font-semibold text-green-700">- Priya Sharma</h4>
-      </div>
-      <div
-        class="bg-white p-6 rounded-lg shadow-lg text-center"
-        data-aos="fade-up"
-        data-aos-delay="100"
-      >
-        <p class="text-lg italic">
-          "Very efficient and easy to use for municipal staff. Love the
-          transparency!"
-        </p>
-        <h4 class="mt-4 font-semibold text-green-700">- Rajesh Kumar</h4>
-      </div>
-      <div
-        class="bg-white p-6 rounded-lg shadow-lg text-center"
-        data-aos="fade-up"
-        data-aos-delay="200"
-      >
-        <p class="text-lg italic">
-          "Audit-ready reports with blockchain backing—every city should use
-          this!"
-        </p>
-        <h4 class="mt-4 font-semibold text-green-700">- Dr. Nandita Rao</h4>
-      </div>
-    </div>
-  </section>
+<section class="p-16 bg-gray-100" id="testimonials">
+  <h2
+    class="text-4xl font-bold text-center mb-10"
+    data-aos="fade-up"
+  >
+    What People Say
+  </h2>
+  <div
+    id="testimonialContainer"
+    class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10"
+  >
+    <!-- Testimonials will be injected here dynamically -->
+  </div>
+</section>
 
   <!-- Contact Section -->
   <section id="contact" class="p-16 bg-green-50">
@@ -416,21 +388,24 @@
       class="max-w-3xl mx-auto bg-white p-10 rounded-lg shadow-lg"
       data-aos="fade-up"
     >
-      <form class="grid grid-cols-1 gap-6" onsubmit="event.preventDefault(); alert('Thank you for contacting us, your query will be looked after immediately');">
+      <form id="contactForm" class="grid grid-cols-1 gap-6">
         <input
           type="text"
+          name="name"
           placeholder="Your Name"
           class="p-3 border rounded shadow"
           required
         />
         <input
           type="email"
+          name="email"
           placeholder="Your Email"
           class="p-3 border rounded shadow"
           required
         />
         <textarea
           rows="5"
+          name="message"
           placeholder="Your Message"
           class="p-3 border rounded shadow"
           required
@@ -451,10 +426,6 @@
   >
     &copy; 2025 WasteLedger | Empowering Transparent Waste Management
   </footer>
-
-  <script>
-    AOS.init();
-  </script>
   <link rel="stylesheet" href="style.css" />
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js">
 </script>
@@ -467,78 +438,179 @@
     document.getElementById('pickupModal').classList.add('hidden');
   }
 </script>
-  <script>
+<script>
+  // ✅ Global backend URL
   const backendURL = 'http://localhost:5000';
 
-  // Citizen waste report
-  document.getElementById('citizenForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
+  // Waste Pickup Form
+  document.getElementById('wastePickupForm')?.addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+  const button = form.querySelector('button');
 
+  // ✅ Validate image
+  const imageFile = formData.get('image');
+  if (!imageFile.type.startsWith('image/')) {
+    alert('Only image files are allowed');
+    return;
+  }
+
+  // ✅ Show loading state
+button.disabled = true;
+button.innerHTML = `
+  <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  Submitting...
+`;
+
+  try {
     const res = await fetch(`${backendURL}/api/report`, {
       method: 'POST',
-      body: formData
+      body: formData,
     });
 
-    const data = await res.json();
-    alert(data.message);
+    if (!res.ok) throw new Error('Network response was not ok');
+    alert('Your request has been submitted successfully!');
     form.reset();
-  });
+  } catch (error) {
+    alert('There was an error submitting your request: ' + error.message);
+  } finally {
+    // ✅ Restore button state
+    button.disabled = false;
+    button.textContent = 'Submit Request';
+  }
+});
+  // Municipal Worker Form
+  document.getElementById('workerForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const button = form.querySelector('button');
 
-  // Municipal worker upload
-  document.getElementById('workerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
+  // ✅ Validate image
+  const imageFile = formData.get('image');
+  if (!imageFile.type.startsWith('image/')) {
+    alert('Only image files are allowed');
+    return;
+  }
 
+  // ✅ Show loading state
+  button.disabled = true;
+button.innerHTML = `
+  <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  Submitting...
+`;
+
+  try {
     const res = await fetch(`${backendURL}/api/municipal`, {
       method: 'POST',
       body: formData
     });
 
-    const data = await res.json();
-    alert(data.message);
+    if (!res.ok) throw new Error('Network response was not ok');
+    alert('Proof uploaded successfully!');
     form.reset();
-  });
+  } catch (error) {
+    alert('There was an error submitting your request: ' + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Submit Proof';
+  }
+});
+  // Contact Form
+  document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const formData = new FormData(form);
+  const plainForm = Object.fromEntries(formData.entries());
+  const button = form.querySelector('button');
 
-  // Contact us
-  document.getElementById('contactForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const plainForm = Object.fromEntries(formData.entries());
+  // ✅ Simple email check (optional)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(plainForm.email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
+
+  button.disabled = true;
+button.innerHTML = `
+  <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  Sending...
+`;
+
+  try {
     const res = await fetch(`${backendURL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(plainForm)
     });
-    const data = await res.json();
-    alert(data.message);
-    e.target.reset();
-  });
+
+    if (!res.ok) throw new Error('Network response was not ok');
+    alert('Message sent successfully!');
+    form.reset();
+  } catch (error) {
+    alert('There was an error submitting your request: ' + error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Send Message';
+  }
+});
+  // Animation Init
+  AOS.init();
 </script>
 <script>
-  document.getElementById('wastePickupForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    try {
-      const res = await fetch(`${backendURL}/api/report`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error('Network response was not ok');
-
-      alert('Your request has been submitted successfully!');
-      form.reset();
-    } catch (error) {
-      alert('There was an error submitting your request: ' + error.message);
+  const testimonials = [
+    {
+      quote: "WasteLedger transformed our city’s waste system. I can actually track requests now!",
+      name: "Priya Sharma",
+      delay: 0
+    },
+    {
+      quote: "Very efficient and easy to use for municipal staff. Love the transparency!",
+      name: "Rajesh Kumar",
+      delay: 100
+    },
+    {
+      quote: "Audit-ready reports with blockchain backing—every city should use this!",
+      name: "Dr. Nandita Rao",
+      delay: 200
+    },
+    {
+      quote: "So easy to submit a pickup request. Finally, a system that works.",
+      name: "Ananya Mehta",
+      delay: 300
+    },
+    {
+      quote: "I love how I can see proof after my complaint is addressed!",
+      name: "Siddharth Verma",
+      delay: 400
     }
-  });
-</script>
+  ];
 
+  const container = document.getElementById("testimonialContainer");
+
+  testimonials.forEach((item, index) => {
+    const card = document.createElement("div");
+    card.className = "bg-white p-6 rounded-lg shadow-lg text-center";
+    card.setAttribute("data-aos", "fade-up");
+    card.setAttribute("data-aos-delay", item.delay || index * 100);
+    card.innerHTML = `
+  <blockquote class="text-lg italic">"${item.quote}"</blockquote>
+  <h4 class="mt-4 font-semibold text-green-700">- ${item.name}</h4>
+`;
+    container.appendChild(card);
+  });
+
+  AOS.init(); // Re-initialize AOS to animate new content
+</script>
 </body>
 </html>

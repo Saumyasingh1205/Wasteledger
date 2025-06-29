@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register | WasteLedger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-100 flex justify-center items-center h-screen">
+  <form id="registerForm" class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-green-700 mb-6">Create Account</h2>
+    <input name="name" type="text" placeholder="Full Name" required class="w-full mb-4 p-3 border rounded" />
+    <input name="email" type="email" placeholder="Email" required class="w-full mb-4 p-3 border rounded" />
+    <input name="password" type="password" placeholder="Password" required class="w-full mb-4 p-3 border rounded" />
+    <button type="submit" class="w-full bg-green-600 text-white p-3 rounded hover:bg-green-700">Register</button>
+  </form>
+
+  <script>
+  console.log("Register script loaded");
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log("Submitting register form...");
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form));
+    console.log(data);
+
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (res.ok) {
+      alert('Registration successful! Please log in.');
+      window.location.href = '/';  // ✅ this will now correctly go to login.html
+    } else {
+      const err = await res.json();
+      alert(err.message);
+    }
+  });
+</script>
+</body>
+</html>
+
