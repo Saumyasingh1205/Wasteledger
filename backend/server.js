@@ -1,16 +1,43 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const session = require('express-session');
+const fs = require('fs');
+const path = require('path');
+
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
+app.use(session({
+  secret: 'wasteledger-secret',
+  resave: false,
+  saveUninitialized: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use(express.static('frontend'));
 
-// Setup file upload storage
+// ----------------- USER STORAGE -----------------
+const USERS_FILE = path.join(__dirname, 'users.json');
+
+const getUsers = () => {
+  if (!fs.existsSync(USERS_FILE)) {
+    fs.writeFileSync(USERS_FILE, '[]');
+  }
+  const data = fs.readFileSync(USERS_FILE, 'utf-8');
+  return JSON.parse(data);
+};
+
+
+const saveUser = (user) => {
+  const users = getUsers();
+  users.push(user);
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+};
+
+// ----------------- FILE UPLOAD -----------------
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req, file, cb) => {
@@ -19,25 +46,92 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Citizen waste pickup submission
+// ----------------- ROUTES -----------------
+
+// Landing Page Logic
+app.get('/', (req, res) => {
+  const users = getUsers();
+  if (!req.session.user) {
+    if (users.length === 0) {
+      return res.sendFile(path.join(__dirname, '../frontend/register.html'));
+    }
+    return res.sendFile(path.join(__dirname, '../frontend/login.html'));
+  }
+  return res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+
+// Register
+app.post('/api/register', (req, res) => {
+  const { name, email, password } = req.body;
+  const users = getUsers();
+  if (users.find(u => u.email === email)) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
+  saveUser({ name, email, password });
+  res.status(200).json({ message: 'Registered successfully' });
+});
+
+// Login
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  const users = getUsers();
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+  req.session.user = user;
+  res.status(200).json({ message: 'Login successful' });
+});
+
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/');
+  });
+});
+
+// Waste Pickup Report
 app.post('/api/report', upload.single('image'), (req, res) => {
-  const { name, location, type, details } = req.body;
+  const { name, location, address, latitude, longitude, wastetype, details } = req.body;
   const image = req.file?.filename;
-  console.log("Pickup Request:", { name, location, type, details, image });
+  console.log("Pickup Request:", { name, location, wastetype, details, image });
   res.status(200).send({ message: 'Pickup request received!' });
 });
 
-// Municipal worker upload
+// Municipal Worker Upload
 app.post('/api/municipal', upload.single('image'), (req, res) => {
-  const { workerId, location, timestamp, notes } = req.body;
+  const { workerId, location, workerAddress, workerLat, workerLng, timestamp, notes } = req.body;
   const image = req.file?.filename;
   console.log("Municipal Proof:", { workerId, location, timestamp, notes, image });
   res.status(200).send({ message: 'Proof uploaded!' });
 });
-// Contact form submission
+
+// Contact Form
 app.post('/contact', (req, res) => {
   const { email, message } = req.body;
-  console.log('Contact Message:', { email, message });
-  res.status(200).send({ message: 'Message received! Thank you for contacting us.' });
+
+  const newMessage = {
+    email,
+    message,
+    timestamp: new Date().toISOString()
+  };
+
+  const messagesFile = path.join(__dirname, 'messages.json');
+  
+  if (!fs.existsSync(messagesFile)) {
+    fs.writeFileSync(messagesFile, '[]');
+  }
+
+  let existingMessages = [];
+  const data = fs.readFileSync(messagesFile);
+  existingMessages = JSON.parse(data);
+
+  existingMessages.push(newMessage);
+  fs.writeFileSync(messagesFile, JSON.stringify(existingMessages, null, 2));
+
+  console.log('Contact Message Saved:', newMessage);
+  res.status(200).send({ message: 'Message received and stored. Thank you!' });
 });
+
+// Start Server
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
