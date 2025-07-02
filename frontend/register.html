@@ -31,7 +31,7 @@
 
     if (res.ok) {
       alert('Registration successful! Please log in.');
-      window.location.href = '/';  // ✅ this will now correctly go to login.html
+      window.location.href = '/';  
     } else {
       const err = await res.json();
       alert(err.message);
@@ -40,4 +40,3 @@
 </script>
 </body>
 </html>
-

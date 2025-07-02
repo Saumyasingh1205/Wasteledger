@@ -18,17 +18,15 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       scroll-behavior: smooth;
     }
-    /* Navbar fix */
     nav {
       backdrop-filter: saturate(180%) blur(10px);
       background-color: rgba(22, 101, 52, 0.85);
     }
-    /* Animated subtle background for Home */
     #home {
       position: relative;
       color: white;
       min-height: 100vh;
-      padding-top: 6rem; /* space for fixed navbar */
+      padding-top: 6rem;
       overflow: hidden;
       background-image: url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1470&q=80");
       background-size: cover;
@@ -47,7 +45,6 @@
       background: rgba(22, 101, 52, 0.75);
       z-index: 0;
     }
-    /* Content wrapper */
     #home .content-wrapper {
       position: relative;
       z-index: 10;
@@ -59,7 +56,6 @@
       justify-content: center;
       align-items: center;
     }
-    /* Left text block */
     #home .text-block {
       flex: 1 1 400px;
       max-width: 480px;
@@ -79,7 +75,7 @@
       text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
     }
     #home .text-block a.button {
-      background-color: #22c55e; /* Tailwind green-500 */
+      background-color: #22c55e;
       padding: 0.75rem 2.5rem;
       border-radius: 9999px;
       color: white;
@@ -91,10 +87,9 @@
       text-align: center;
     }
     #home .text-block a.button:hover {
-      background-color: #16a34a; /* Tailwind green-600 */
+      background-color: #16a34a;
       box-shadow: 0 12px 25px rgba(22,163,74,0.6);
     }
-    /* Right images grid */
     #home .image-grid {
       flex: 1 1 400px;
       display: grid;
@@ -116,15 +111,12 @@
     #home .image-grid img:hover {
       transform: scale(1.05);
     }
-    /* Lottie container below */
     #home .lottie-wrapper {
       width: 100%;
       margin-top: 3rem;
       text-align: center;
       z-index: 10;
     }
-
-    /* Responsive */
     @media (max-width: 768px) {
       #home .content-wrapper {
         flex-direction: column;
@@ -164,7 +156,6 @@
       <li><a href="#contact" class="hover:text-green-300">Contact</a></li>
     </ul>
   </nav>
-
   <!-- Home Section -->
   <section id="home">
     <div class="content-wrapper">
@@ -182,7 +173,6 @@
       </div>
     </div>
   </section>
-
   <!-- Services Section -->
   <section
     id="services"
@@ -243,7 +233,6 @@
       </div>
     </div>
   </section>
-
   <!-- Report Section -->
   <section id="report" class="p-16 bg-white">
     <h2 class="text-4xl font-bold text-center mb-10">Submit Waste Pickup Request</h2>
@@ -295,7 +284,6 @@
       </form>
     </div>
   </section>
-
   <!-- Municipal Worker Section -->
   <section
     id="municipal"
@@ -362,7 +350,6 @@
       </p>
     </div>
   </section>
-
   <!-- Testimonials Section -->
 <section class="p-16 bg-gray-100" id="testimonials">
   <h2
@@ -375,10 +362,8 @@
     id="testimonialContainer"
     class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10"
   >
-    <!-- Testimonials will be injected here dynamically -->
   </div>
 </section>
-
   <!-- Contact Section -->
   <section id="contact" class="p-16 bg-green-50">
     <h2 class="text-4xl font-bold text-center mb-10" data-aos="fade-up">
@@ -419,7 +404,6 @@
       </form>
     </div>
   </section>
-
   <!-- Footer -->
   <footer
     class="bg-green-800 text-white text-center p-6 mt-10 text-lg"
@@ -441,21 +425,18 @@
 <script>
   // ✅ Global backend URL
   const backendURL = 'http://localhost:5000';
-
   // Waste Pickup Form
   document.getElementById('wastePickupForm')?.addEventListener('submit', async function(event) {
   event.preventDefault();
   const form = event.target;
   const formData = new FormData(form);
   const button = form.querySelector('button');
-
   // ✅ Validate image
   const imageFile = formData.get('image');
   if (!imageFile.type.startsWith('image/')) {
     alert('Only image files are allowed');
     return;
   }
-
   // ✅ Show loading state
 button.disabled = true;
 button.innerHTML = `
@@ -465,13 +446,11 @@ button.innerHTML = `
   </svg>
   Submitting...
 `;
-
   try {
     const res = await fetch(`${backendURL}/api/report`, {
       method: 'POST',
       body: formData,
     });
-
     if (!res.ok) throw new Error('Network response was not ok');
     alert('Your request has been submitted successfully!');
     form.reset();
@@ -489,14 +468,12 @@ button.innerHTML = `
   const form = e.target;
   const formData = new FormData(form);
   const button = form.querySelector('button');
-
   // ✅ Validate image
   const imageFile = formData.get('image');
   if (!imageFile.type.startsWith('image/')) {
     alert('Only image files are allowed');
     return;
   }
-
   // ✅ Show loading state
   button.disabled = true;
 button.innerHTML = `
@@ -506,7 +483,6 @@ button.innerHTML = `
   </svg>
   Submitting...
 `;
-
   try {
     const res = await fetch(`${backendURL}/api/municipal`, {
       method: 'POST',
@@ -530,14 +506,12 @@ button.innerHTML = `
   const formData = new FormData(form);
   const plainForm = Object.fromEntries(formData.entries());
   const button = form.querySelector('button');
-
   // ✅ Simple email check (optional)
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(plainForm.email)) {
     alert('Please enter a valid email address');
     return;
   }
-
   button.disabled = true;
 button.innerHTML = `
   <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -546,14 +520,12 @@ button.innerHTML = `
   </svg>
   Sending...
 `;
-
   try {
     const res = await fetch(`${backendURL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(plainForm)
     });
-
     if (!res.ok) throw new Error('Network response was not ok');
     alert('Message sent successfully!');
     form.reset();
@@ -595,7 +567,6 @@ button.innerHTML = `
       delay: 400
     }
   ];
-
   const container = document.getElementById("testimonialContainer");
 
   testimonials.forEach((item, index) => {
@@ -609,8 +580,7 @@ button.innerHTML = `
 `;
     container.appendChild(card);
   });
-
-  AOS.init(); // Re-initialize AOS to animate new content
+  AOS.init();
 </script>
 </body>
 </html>

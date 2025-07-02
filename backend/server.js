@@ -8,6 +8,7 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 
+// Middleware
 app.use(cors());
 app.use(session({
   secret: 'wasteledger-secret',
@@ -16,20 +17,19 @@ app.use(session({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'));
-app.use(express.static('frontend'));
 
-// ----------------- USER STORAGE -----------------
+// Static file serving
+app.use('/uploads', express.static('uploads'));
+
+// User storage
 const USERS_FILE = path.join(__dirname, 'users.json');
 
 const getUsers = () => {
   if (!fs.existsSync(USERS_FILE)) {
     fs.writeFileSync(USERS_FILE, '[]');
   }
-  const data = fs.readFileSync(USERS_FILE, 'utf-8');
-  return JSON.parse(data);
+  return JSON.parse(fs.readFileSync(USERS_FILE, 'utf-8'));
 };
-
 
 const saveUser = (user) => {
   const users = getUsers();
@@ -37,7 +37,7 @@ const saveUser = (user) => {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 };
 
-// ----------------- FILE UPLOAD -----------------
+// Multer for uploads
 const storage = multer.diskStorage({
   destination: 'uploads/',
   filename: (req, file, cb) => {
@@ -46,19 +46,26 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ----------------- ROUTES -----------------
-
 // Landing Page Logic
 app.get('/', (req, res) => {
+  console.log("🛠 Hit the / route");
   const users = getUsers();
+  console.log('➡️ Session user:', req.session.user);
+  console.log('➡️ Users list:', users);
+
   if (!req.session.user) {
     if (users.length === 0) {
+      console.log('🟢 Showing register.html');
       return res.sendFile(path.join(__dirname, '../frontend/register.html'));
     }
+    console.log('🟡 Showing login.html');
     return res.sendFile(path.join(__dirname, '../frontend/login.html'));
   }
+
+  console.log('🔵 Showing index.html');
   return res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Register
 app.post('/api/register', (req, res) => {
@@ -109,7 +116,6 @@ app.post('/api/municipal', upload.single('image'), (req, res) => {
 // Contact Form
 app.post('/contact', (req, res) => {
   const { email, message } = req.body;
-
   const newMessage = {
     email,
     message,
@@ -117,15 +123,11 @@ app.post('/contact', (req, res) => {
   };
 
   const messagesFile = path.join(__dirname, 'messages.json');
-  
   if (!fs.existsSync(messagesFile)) {
     fs.writeFileSync(messagesFile, '[]');
   }
 
-  let existingMessages = [];
-  const data = fs.readFileSync(messagesFile);
-  existingMessages = JSON.parse(data);
-
+  const existingMessages = JSON.parse(fs.readFileSync(messagesFile, 'utf-8'));
   existingMessages.push(newMessage);
   fs.writeFileSync(messagesFile, JSON.stringify(existingMessages, null, 2));
 
@@ -134,4 +136,4 @@ app.post('/contact', (req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
